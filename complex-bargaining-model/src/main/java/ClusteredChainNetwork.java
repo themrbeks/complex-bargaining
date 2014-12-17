@@ -13,7 +13,6 @@ public abstract class ClusteredChainNetwork extends UndirectedSparseGraph {
     public double stepDelta;
 
     public abstract Node getLastNode (); //TODO: implementirati u Supply i Demand klasama
-    public abstract Node getFirstNode (); //TODO: implementirati u Supply i Demand klasama
 
     public Node getNode (int nodeID) {
         ArrayList<Node> listOfNodesInTheNetwork = new ArrayList(this.getVertices());
