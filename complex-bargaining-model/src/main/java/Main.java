@@ -5,14 +5,14 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        int numberOfNodes = 50;
-        double probabilityP = 0.6;
-        double stepDelta = 1.001;
+        int numberOfNodes = 1000;
+        double probabilityP = 0.8;
+        double stepDelta = 0.999;
         double initialNodePrice = 100;
 
         Util.initialize();
 
-        SupplyNetwork test = new SupplyNetwork(numberOfNodes,probabilityP,stepDelta,initialNodePrice);
+        ClusteredChainNetwork test = new ClusteredChainNetwork(numberOfNodes,probabilityP,stepDelta,initialNodePrice);
         test.exportToCSV("test.csv");
     }
 }

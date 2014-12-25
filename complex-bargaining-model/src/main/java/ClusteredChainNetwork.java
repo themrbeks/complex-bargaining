@@ -10,13 +10,23 @@ import java.util.List;
 /**
  * Created by Stjepan on 17/12/14.
  */
-public abstract class ClusteredChainNetwork extends UndirectedSparseGraph {
+public class ClusteredChainNetwork extends UndirectedSparseGraph {
 
     public List<Integer> listOfNodeIDs;
     public double stepDelta;
     public double probabilityP;
 
-    public abstract Node getLastNode (); //TODO: implementirati u Supply i Demand klasama
+    public ClusteredChainNetwork(int numberOfNodes, double probabilityP, double stepDelta, double initialNodePrice) {
+        super();
+        this.initializeNetwork(numberOfNodes, probabilityP, stepDelta, initialNodePrice);
+    }
+
+    public Node getLastNode() {
+        if ((this.stepDelta - 1)>0){ //if the step is larger than 1, the network spreads towards growing prices
+            return this.getMaxNode();
+        }
+        return this.getMinNode();
+    }
 
     public void initializeNetwork(int numberOfNodes, double probabilityP, double stepDelta, double initialNodePrice){
         this.listOfNodeIDs = new ArrayList<>();
@@ -24,8 +34,9 @@ public abstract class ClusteredChainNetwork extends UndirectedSparseGraph {
         this.probabilityP = probabilityP;
 
         this.addInitialNode(initialNodePrice);
-        for (int i = 0; i < numberOfNodes; i++) {
+        for (int i = 0; i < numberOfNodes-1; i++) {
             this.addNodeToNetwork(new Node(),this.probabilityP);
+System.out.println(i);
         }
     }
 
@@ -53,15 +64,15 @@ public abstract class ClusteredChainNetwork extends UndirectedSparseGraph {
      * @param node - the node to add to the network
      */
     public void addNodeToNetwork(Node node, double p) {
-System.out.println("\nDodajem cvor " + node.ID );
+//System.out.println("\nDodajem cvor " + node.ID );
         ArrayList<Node> nodesToConnectTo;
         if (Util.random.nextDouble()<p) { //with probability probabilityP, connect to the existing structure
-System.out.println(" i to u postojecu strukturu.");
+//System.out.println(" i to u postojecu strukturu.");
             addNodeToExistingStructure(node);
         }
         else {  //with probability 1 - probabilityP, connect to the tail of the network
             addNodeToTail(node);
-System.out.println(" i to na kraj.");
+//System.out.println(" i to na kraj.");
         }
     }
 
@@ -82,6 +93,32 @@ System.out.println(" i to na kraj.");
         out.write(stringToWrite);
         out.close();
         fStream.close();
+    }
+
+    private Node getMaxNode () {
+        ArrayList<Node> listOfNodesInNetwork = new ArrayList<Node>(this.getVertices());
+        double maxPrice = 0;
+        Node lastNode = null;
+        for (Node nodeItem : listOfNodesInNetwork) {
+            if (nodeItem.price > maxPrice) {
+                lastNode = nodeItem;
+                maxPrice = lastNode.price;
+            }
+        }
+        return lastNode;
+    }
+
+    private Node getMinNode () {
+        ArrayList<Node> listOfNodesInNetwork = new ArrayList<Node>(this.getVertices());
+        double minPrice = 10e8;
+        Node lastNode = null;
+        for (Node nodeItem : listOfNodesInNetwork) {
+            if (nodeItem.price < minPrice) {
+                lastNode = nodeItem;
+                minPrice = lastNode.price;
+            }
+        }
+        return lastNode;
     }
 
     private void addInitialNode(double initialNodePrice) {
@@ -113,19 +150,19 @@ System.out.println(" i to na kraj.");
 
     private void addNodeToExistingStructure(Node node) {
         Node originalNodeToConnectTo = this.getRandomNode(); //get first uniformly random node to connect to
-System.out.println("Spajam cvor " + node.ID + " s cvorom " + originalNodeToConnectTo.ID);
+//System.out.println("Spajam cvor " + node.ID + " s cvorom " + originalNodeToConnectTo.ID);
         double priceOfNewNode = this.calculatePriceOfNeighborhood(originalNodeToConnectTo); //new node price is the neighborhood avg
         node.price = priceOfNewNode; //set both prices to new price as average of neighborhood
         node.initialBargainingPrice = priceOfNewNode;
 
-Collection test = this.getNeighbors(originalNodeToConnectTo);
-System.out.println(test.size());
+//Collection test = this.getNeighbors(originalNodeToConnectTo);
+//System.out.println(test.size());
         ArrayList<Node> nodesToConnectTo = new ArrayList(this.getNeighbors(originalNodeToConnectTo)); //connect to all the neighbors of the first node
         nodesToConnectTo.add(originalNodeToConnectTo);
-System.out.println("Susjedi cvora " + originalNodeToConnectTo.ID + " su: ");
-for (Node neighbor : nodesToConnectTo){
-    System.out.print(neighbor.ID + " ");
-}
+//System.out.println("Susjedi cvora " + originalNodeToConnectTo.ID + " su: ");
+//for (Node neighbor : nodesToConnectTo){
+//    System.out.print(neighbor.ID + " ");
+//}
         this.addNode(node);
         this.connectNodeToNeighborhood(node, nodesToConnectTo);
     }
@@ -146,7 +183,7 @@ for (Node neighbor : nodesToConnectTo){
     private void connectNodeToNeighborhood (Node node, ArrayList<Node> neighborhood) {
         for (Node nodeItem : neighborhood) {
             this.addEdge(new Edge(), node, nodeItem );
-System.out.println("Dodajem vezu izmedu cvorova " + node.ID + " i " + nodeItem.ID);
+//System.out.println("Dodajem vezu izmedu cvorova " + node.ID + " i " + nodeItem.ID);
         }
 
     }
