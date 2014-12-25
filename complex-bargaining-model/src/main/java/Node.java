@@ -3,6 +3,8 @@
  */
 public class Node {
 
+    static int IDcounter = 0;
+
     public double price;
     public double initialBargainingPrice;
     public int ID;
@@ -10,7 +12,11 @@ public class Node {
     public Node (double price) {
         this.price = price;
         this.initialBargainingPrice = price;
-        this.ID = Util.nextNodeID();
+        this.ID = IDcounter++;
+    }
+
+    public Node () {
+        this.ID = IDcounter++;
     }
 
     public boolean hasID (int ID) {

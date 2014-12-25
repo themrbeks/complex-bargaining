@@ -5,6 +5,10 @@ import java.util.ArrayList;
  */
 public class SupplyNetwork extends ClusteredChainNetwork {
 
+    public SupplyNetwork(int numberOfNodes, double probabilityP, double stepDelta, double initialNodePrice) {
+        this.initializeNetwork(numberOfNodes, probabilityP, stepDelta, initialNodePrice);
+    }
+
     public Node getLastNode () { //looking for the node with the highest price
         ArrayList<Node> listOfNodesInNetwork = new ArrayList<Node>(this.getVertices());
         double maxPrice = 0;

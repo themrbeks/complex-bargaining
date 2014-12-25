@@ -5,19 +5,9 @@ import java.util.Random;
  */
 public class Util {
     public static Random random;
-    public static int edgeIDCounter, nodeIDCounter;
 
-    public void initializeAll () {
+    public static void initialize() {
         random = new Random();
-        edgeIDCounter = 0;
-        nodeIDCounter = 0;
     }
 
-    public static int nextEdgeID() {
-        return edgeIDCounter++;
-    }
-
-    public static int nextNodeID() {
-        return nodeIDCounter++;
-    }
 }
