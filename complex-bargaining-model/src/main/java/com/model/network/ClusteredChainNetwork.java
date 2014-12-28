@@ -1,24 +1,31 @@
+package com.model.network;
+
+import com.jmatio.types.MLDouble;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Stjepan on 17/12/14.
  */
 public class ClusteredChainNetwork extends UndirectedSparseGraph {
 
+    private static Random random = new Random();
+
     public List<Integer> listOfNodeIDs;
     public double stepDelta;
     public double probabilityP;
 
-    public ClusteredChainNetwork(int numberOfNodes, double probabilityP, double stepDelta, double initialNodePrice) {
+    public ClusteredChainNetwork(double probabilityP, double stepDelta) {
         super();
-        this.initializeNetwork(numberOfNodes, probabilityP, stepDelta, initialNodePrice);
+        this.listOfNodeIDs = new ArrayList<>();
+        this.stepDelta = stepDelta;
+        this.probabilityP = probabilityP;
     }
 
     public Node getLastNode() {
@@ -28,15 +35,17 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         return this.getMinNode();
     }
 
-    public void initializeNetwork(int numberOfNodes, double probabilityP, double stepDelta, double initialNodePrice){
-        this.listOfNodeIDs = new ArrayList<>();
-        this.stepDelta = stepDelta;
-        this.probabilityP = probabilityP;
+    public Node getFirstNode() {
+        if ((this.stepDelta - 1)>0){ //if the step is larger than 1, the network spreads towards growing prices
+            return this.getMinNode();
+        }
+        return this.getMaxNode();
+    }
 
+    public void initializeNetwork(int numberOfNodes, double initialNodePrice){
         this.addInitialNode(initialNodePrice);
         for (int i = 0; i < numberOfNodes-1; i++) {
-            this.addNodeToNetwork(new Node(),this.probabilityP);
-System.out.println(i);
+            this.addNodeToNetwork(new Node());
         }
     }
 
@@ -55,25 +64,32 @@ System.out.println(i);
      * @return
      */
     public Node getRandomNode () {
-        int randomNodeIndex = Util.random.nextInt(this.size());
+        int randomNodeIndex = random.nextInt(this.size());
         return this.getNode(this.listOfNodeIDs.get(randomNodeIndex));
     }
+
 
     /**
      * Adds the specified node to the network, following the clustered chain network algorithm, with the probability parameter p.
      * @param node - the node to add to the network
      */
-    public void addNodeToNetwork(Node node, double p) {
-//System.out.println("\nDodajem cvor " + node.ID );
+    public void addNodeToNetwork(Node node) {
         ArrayList<Node> nodesToConnectTo;
-        if (Util.random.nextDouble()<p) { //with probability probabilityP, connect to the existing structure
-//System.out.println(" i to u postojecu strukturu.");
+        if (random.nextDouble()<this.probabilityP) { //with probability probabilityP, connect to the existing structure
             addNodeToExistingStructure(node);
         }
         else {  //with probability 1 - probabilityP, connect to the tail of the network
             addNodeToTail(node);
-//System.out.println(" i to na kraj.");
         }
+    }
+
+    public void removeNodeFromNetwork(Node node) {
+        for (Node neighbor : node.connections) {
+            neighbor.connections.remove(node);
+        }
+        node.connections.clear();
+        this.listOfNodeIDs.remove(node.ID);
+        this.removeVertex(node);
     }
 
     public void exportToCSV (String fileName) throws IOException {
@@ -93,6 +109,16 @@ System.out.println(i);
         out.write(stringToWrite);
         out.close();
         fStream.close();
+    }
+
+    public MLDouble exportNodePrices(String variableName) {
+        double [] nodePrices = new double [this.size()];
+        int i = 0;
+        ArrayList<Node> listOfNodesInNetwork = new ArrayList<Node>(this.getVertices());
+        for (Node nodeItem : listOfNodesInNetwork){
+            nodePrices[i++] = nodeItem.price;
+        }
+        return new MLDouble(variableName,nodePrices,1);
     }
 
     private Node getMaxNode () {
@@ -121,7 +147,7 @@ System.out.println(i);
         return lastNode;
     }
 
-    private void addInitialNode(double initialNodePrice) {
+    public void addInitialNode(double initialNodePrice) {
         this.addNode(new Node(initialNodePrice));
     }
 
@@ -129,7 +155,7 @@ System.out.println(i);
      * Just add the given node to the list of IDs and to the structure. No connections, nothing fancy.
      * @param node
      */
-    private void addNode (Node node) {
+    public void addNode (Node node) {
         this.listOfNodeIDs.add(node.ID); //add this node's id to the list of the network nodes
         this.addVertex(node);
     }
@@ -139,7 +165,6 @@ System.out.println(i);
 
         double priceOfNewNode = lastNode.price * stepDelta; //the price of new node is relative to the last tail price
         node.price = priceOfNewNode; //set both prices
-        node.initialBargainingPrice = priceOfNewNode;
 
         ArrayList<Node> nodesToConnectTo = new ArrayList(); //connect only to the last node
         nodesToConnectTo.add(lastNode);
@@ -150,19 +175,13 @@ System.out.println(i);
 
     private void addNodeToExistingStructure(Node node) {
         Node originalNodeToConnectTo = this.getRandomNode(); //get first uniformly random node to connect to
-//System.out.println("Spajam cvor " + node.ID + " s cvorom " + originalNodeToConnectTo.ID);
+
         double priceOfNewNode = this.calculatePriceOfNeighborhood(originalNodeToConnectTo); //new node price is the neighborhood avg
         node.price = priceOfNewNode; //set both prices to new price as average of neighborhood
-        node.initialBargainingPrice = priceOfNewNode;
 
-//Collection test = this.getNeighbors(originalNodeToConnectTo);
-//System.out.println(test.size());
         ArrayList<Node> nodesToConnectTo = new ArrayList(this.getNeighbors(originalNodeToConnectTo)); //connect to all the neighbors of the first node
         nodesToConnectTo.add(originalNodeToConnectTo);
-//System.out.println("Susjedi cvora " + originalNodeToConnectTo.ID + " su: ");
-//for (Node neighbor : nodesToConnectTo){
-//    System.out.print(neighbor.ID + " ");
-//}
+
         this.addNode(node);
         this.connectNodeToNeighborhood(node, nodesToConnectTo);
     }
@@ -173,6 +192,7 @@ System.out.println(i);
 
     private double calculatePriceOfNeighborhood (Node node) {
         ArrayList<Node> listOfNeighborsOfNode = new ArrayList(this.getNeighbors(node));
+        listOfNeighborsOfNode.add(node);
         double sumOfPrices = 0;
         for (Node nodeItem : listOfNeighborsOfNode) {
             sumOfPrices += nodeItem.price;
@@ -182,10 +202,14 @@ System.out.println(i);
 
     private void connectNodeToNeighborhood (Node node, ArrayList<Node> neighborhood) {
         for (Node nodeItem : neighborhood) {
-            this.addEdge(new Edge(), node, nodeItem );
-//System.out.println("Dodajem vezu izmedu cvorova " + node.ID + " i " + nodeItem.ID);
+            this.connectNodes(node,nodeItem);
         }
+    }
 
+    private void connectNodes (Node node1, Node node2) {
+        this.addEdge(new Edge(), node1, node2);
+        node1.addToConnections(node2);
+        node2.addToConnections(node1);
     }
 
 }

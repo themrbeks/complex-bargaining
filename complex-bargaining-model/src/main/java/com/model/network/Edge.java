@@ -1,3 +1,5 @@
+package com.model.network;
+
 /**
  * Created by Stjepan on 17/12/14.
  */
