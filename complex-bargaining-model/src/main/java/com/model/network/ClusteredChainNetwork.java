@@ -15,7 +15,7 @@ import java.util.Random;
  */
 public class ClusteredChainNetwork extends UndirectedSparseGraph {
 
-    private static Random random = new Random();
+    protected static Random random = new Random();
 
     public List<Integer> listOfNodeIDs;
     public double stepDelta;
@@ -28,14 +28,14 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         this.probabilityP = probabilityP;
     }
 
-    public Node getLastNode() {
+    protected Node getLastNode() {
         if ((this.stepDelta - 1)>0){ //if the step is larger than 1, the network spreads towards growing prices
             return this.getMaxNode();
         }
         return this.getMinNode();
     }
 
-    public Node getFirstNode() {
+    protected Node getFirstNode() {
         if ((this.stepDelta - 1)>0){ //if the step is larger than 1, the network spreads towards growing prices
             return this.getMinNode();
         }
@@ -45,11 +45,15 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
     public void initializeNetwork(int numberOfNodes, double initialNodePrice){
         this.addInitialNode(initialNodePrice);
         for (int i = 0; i < numberOfNodes-1; i++) {
-            this.addNodeToNetwork(new Node());
+            this.addNewNodeToNetwork();
         }
     }
 
-    public Node getNode (int nodeID) {
+    protected void addNewNodeToNetwork(){
+        this.addNodeToNetwork(new Node());
+    }
+
+    protected Node getNode (int nodeID) {
         ArrayList<Node> listOfNodesInTheNetwork = new ArrayList(this.getVertices());
         for(Node nodeItem : listOfNodesInTheNetwork) {
             if (nodeItem.hasID(nodeID)){
@@ -63,7 +67,7 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
      * Returns a randomly chosen node from the network, with uniform probability.
      * @return
      */
-    public Node getRandomNode () {
+    protected Node getRandomNode () {
         int randomNodeIndex = random.nextInt(this.size());
         return this.getNode(this.listOfNodeIDs.get(randomNodeIndex));
     }
@@ -88,7 +92,7 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
             neighbor.connections.remove(node);
         }
         node.connections.clear();
-        this.listOfNodeIDs.remove(node.ID);
+        this.listOfNodeIDs.remove((Integer)node.ID);
         this.removeVertex(node);
     }
 

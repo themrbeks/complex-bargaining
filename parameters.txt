@@ -1,0 +1,14 @@
+numberOfSupplyNodes: 300
+numberOfDemandNodes: 300
+supplyNetworkProbabilityP: 0.3
+demandNetworkProbabilityP: 0.3
+supplyNetworkStepDelta: 1.01
+demandNetworkStepDelta: 0.99
+supplyNetworkInitialNodePrice: 100
+demandNetworkInitialNodePrice: 90
+supplyAgentConcessionStep: 0.999
+demandAgentConcessionStep: 1.001
+betaC: 1
+numberOfTradingDays: 100
+numberOfIterationsPerDay: 10000
+betaFileName: beta.csv

@@ -1,7 +1,7 @@
 import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
 import com.model.bargaining.Market;
-import com.model.network.ClusteredChainNetwork;
+import com.model.bargaining.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,22 +11,20 @@ import java.util.Collection;
  * Created by Stjepan on 25/12/14.
  */
 public class Main {
-    public static void main(String[] args) throws IOException {
-        int numberOfNodes = 500;
-        double probabilityP = 0.5;
-        double demandStepDelta = 0.99;
-        double supplyStepDelta = 1.01;
-        double initialNodePrice = 100;
+    public static void main(String[] args) throws Exception {
 
-        Market test = new Market(numberOfNodes,numberOfNodes,probabilityP,probabilityP,supplyStepDelta,demandStepDelta,initialNodePrice,initialNodePrice);
+        Util.initialize("parameters.txt");
+
+        Market test = new Market(Util.numberOfSupplyNodes,Util.numberOfDemandNodes,Util.supplyNetworkProbabilityP,Util.demandNetworkProbabilityP,Util.supplyNetworkStepDelta,Util.demandNetworkStepDelta,Util.supplyNetworkInitialNodePrice,Util.demandNetworkInitialNodePrice);
         test.supplyNetwork.exportToCSV("supply.csv");
         test.demandNetwork.exportToCSV("demand.csv");
 
-        test.simulate(1000,500,0.999,1.001);
+        test.simulate(Util.numberOfIterationsPerDay, Util.numberOfTradingDays,Util.supplyAgentConcessionStep,Util.demandAgentConcessionStep);
 
         Collection<MLArray> c = new ArrayList<>();
         c.add(test.supplyNetwork.exportNodePrices("supplyPrices"));
         c.add(test.demandNetwork.exportNodePrices("demandPrices"));
+        c.add(test.exportIntradayPrices("intradayPrices"));
 
         new MatFileWriter("output.mat", c);
     }

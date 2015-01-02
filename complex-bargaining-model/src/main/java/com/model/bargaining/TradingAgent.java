@@ -7,26 +7,32 @@ import com.model.network.Node;
  */
 public abstract class TradingAgent extends Node {
 
-    public double startPrice;
     public double concessionStep;
+    public double initialBargainingPrice;
 
-    public TradingAgent(){
+    protected abstract double calculateExpectedUtility (double offer, TradingAgent firstOppositeAgent, double referentPrice, int time);
+
+    protected abstract double calculateUtility (double offer, double referentPrice);
+
+    public TradingAgent(double concessionStep){
         super();
+        this.concessionStep = concessionStep;
     }
 
-    public TradingAgent (double price) {
+    public TradingAgent (double price, double concessionStep) {
         super(price);
-        this.startPrice = price;
+        initialBargainingPrice = price;
+        this.concessionStep = concessionStep;
     }
 
     /**
      * The agent makes a move, with respect to the offer by the first opposite agent.
      * If it accepts the offer, returns true, otherwise returns false and corrects price.
-     * @param referentAgent
+     * @param firstOppositeAgent
      * @return
      */
-    public boolean move (TradingAgent referentAgent) {
-        if (this.acceptsOffer(referentAgent.price)){
+    public boolean move (TradingAgent firstOppositeAgent, double referentPrice) {
+        if (this.acceptsOffer(firstOppositeAgent, referentPrice)){
             return true;
         }
         else {
@@ -40,7 +46,7 @@ public abstract class TradingAgent extends Node {
      * @param firstOppositeAgent
      * @return
      */
-    public double getLambda (TradingAgent firstOppositeAgent){
+    public double calculateLambda(TradingAgent firstOppositeAgent){
 
         int sizeOfOppositeCluster = firstOppositeAgent.connections.size() + 1;
         int sizeOfOwnCluster = this.connections.size() + 1;
@@ -54,8 +60,12 @@ public abstract class TradingAgent extends Node {
         }
     }
 
-    private boolean acceptsOffer (double offer) {
-        return true;
-
+    private boolean acceptsOffer (TradingAgent firstOppositeAgent, double referentPrice) {
+        double expectedUtilityOfOfferedPrice = this.calculateExpectedUtility(firstOppositeAgent.price, firstOppositeAgent, referentPrice, 0);
+        double expectedUtilityOfOwnPrice = this.calculateExpectedUtility(this.price, firstOppositeAgent, referentPrice, 1);
+        if ((expectedUtilityOfOfferedPrice - expectedUtilityOfOwnPrice > Util.e)) {
+            return true;
+        }
+        return false;
     }
 }
