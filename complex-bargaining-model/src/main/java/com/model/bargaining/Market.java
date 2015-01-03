@@ -83,7 +83,7 @@ public class Market {
         if (activeSupplyAgent.move(firstDemandAgent,demandReferentPrice)) {
             double tradePrice = firstDemandAgent.price;
             this.trade(activeSupplyAgent, firstDemandAgent);
-            System.out.println(tradePrice);
+System.out.println(Util.tradingDayCounter + ": " + tradePrice);
             return tradePrice;
         }
         return Double.NaN;
@@ -96,7 +96,7 @@ public class Market {
         if (activeDemandAgent.move(firstSupplyAgent,supplyReferentPrice)) {
             double tradePrice = firstSupplyAgent.price;
             this.trade(firstSupplyAgent, activeDemandAgent);
-            System.out.println(tradePrice);
+System.out.println(Util.tradingDayCounter + ": " + tradePrice);
             return tradePrice;
         }
         return Double.NaN;

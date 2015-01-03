@@ -1,5 +1,8 @@
+package com.model;
+
 import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
+import com.jmatio.types.MLDouble;
 import com.model.bargaining.Market;
 import com.model.bargaining.Util;
 
@@ -22,8 +25,8 @@ public class Main {
         test.simulate(Util.numberOfIterationsPerDay, Util.numberOfTradingDays,Util.supplyAgentConcessionStep,Util.demandAgentConcessionStep);
 
         Collection<MLArray> c = new ArrayList<>();
-        c.add(test.supplyNetwork.exportNodePrices("supplyPrices"));
-        c.add(test.demandNetwork.exportNodePrices("demandPrices"));
+
+        c.add(new MLDouble("beta",Util.beta, 1));
         c.add(test.exportIntradayPrices("intradayPrices"));
 
         new MatFileWriter("output.mat", c);

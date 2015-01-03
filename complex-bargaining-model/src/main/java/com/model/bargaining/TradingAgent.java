@@ -36,7 +36,14 @@ public abstract class TradingAgent extends Node {
             return true;
         }
         else {
-            this.price *= this.concessionStep;
+            double deltaScalingFactor;
+            if (this instanceof DemandAgent) {
+                deltaScalingFactor = 1-Math.pow(this.calculateLambda(firstOppositeAgent),1);//Util.betac/Util.getBeta());
+            }
+            else {
+                deltaScalingFactor = 1-Math.pow(this.calculateLambda(firstOppositeAgent),1);//Util.getBeta()/Util.betac);
+            }
+            this.price *= 1+((this.concessionStep-1) * deltaScalingFactor);
             return false;
         }
     }

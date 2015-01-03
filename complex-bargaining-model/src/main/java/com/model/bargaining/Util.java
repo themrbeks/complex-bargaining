@@ -95,7 +95,6 @@ public class Util {
                 throw new Exception("Size of beta does not fit the number of trading days.");
             }
             beta[i] = Double.parseDouble(line.trim());
-            beta[i] = 1; //TODO
         }
         br.close();
 
