@@ -75,9 +75,18 @@ public class Market {
         Util.iterationCounter = 0;
         Util.tradingDayCounter = 0;
 
+System.out.print("\nDiscarding first " + Util.numberOfIterationsToDiscard + " iterations: \n[");
         this.discardFirstIterations();
+System.out.print("] Done.");
+
+System.out.print("\nSimulating " + Util.numberOfTradingDays + " trading days: \n[");
+
+int segment = Util.numberOfTradingDays/10-1;
 
         for (int i = 0; i < numberOfDays; i++) {
+if (i%segment == 0) {
+    System.out.print("-");
+}
             for (int j = 0; j < this.numberOfIterationsPerDay; j++) {
 
                 this.supplyNetworkSize[Util.iterationCounter] = this.supplyNetwork.size();
@@ -93,9 +102,21 @@ public class Market {
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
                 }
             }
-            this.averageDayPrices[Util.tradingDayCounter] = (double)this.dailyVolumes[Util.tradingDayCounter]/(double)this.dailyQuantities[Util.tradingDayCounter];
+            double dayPrice = (double)this.dailyVolumes[Util.tradingDayCounter]/(double)this.dailyQuantities[Util.tradingDayCounter];
+            if (Double.isNaN(dayPrice)){
+                if (Util.tradingDayCounter == 0) {
+                    this.averageDayPrices[Util.tradingDayCounter] = 100;
+                }
+                else {
+                    this.averageDayPrices[Util.tradingDayCounter] = this.averageDayPrices[Util.tradingDayCounter-1];
+                }
+            }
+            else {
+                this.averageDayPrices[Util.tradingDayCounter] = dayPrice;
+            }
             Util.tradingDayCounter++;
         }
+        System.out.print("] Done.");
     }
 
     public MLDouble exportIntradayPrices(String variableName) {
@@ -129,7 +150,7 @@ public class Market {
         if (activeSupplyAgent.move(firstDemandAgent,demandReferentPrice)) {
             double tradePrice = firstDemandAgent.price;
             this.trade(activeSupplyAgent, firstDemandAgent);
-System.out.println(Util.tradingDayCounter + ": " + tradePrice);
+//System.out.println(Util.tradingDayCounter + ": " + tradePrice);
             return tradePrice;
         }
         return Double.NaN;
@@ -142,15 +163,13 @@ System.out.println(Util.tradingDayCounter + ": " + tradePrice);
         if (activeDemandAgent.move(firstSupplyAgent,supplyReferentPrice)) {
             double tradePrice = firstSupplyAgent.price;
             this.trade(firstSupplyAgent, activeDemandAgent);
-System.out.println(Util.tradingDayCounter + ": " + tradePrice);
+//System.out.println(Util.tradingDayCounter + ": " + tradePrice);
             return tradePrice;
         }
         return Double.NaN;
     }
 
     private void trade (SupplyAgent tradingSupplyAgent, DemandAgent tradingDemandAgent) {
-System.out.println(this.supplyNetwork.size());
-System.out.println(this.demandNetwork.size());
         this.demandNetwork.removeNodeFromNetwork(tradingDemandAgent);
         this.supplyNetwork.removeNodeFromNetwork(tradingSupplyAgent);
         this.supplyReferentPrice = this.supplyNetwork.getFirstNode().price;
@@ -175,7 +194,11 @@ System.out.println(this.demandNetwork.size());
 
 
     private void discardFirstIterations () {
+int segment = Util.numberOfIterationsToDiscard/10-1;
         for (int i = 0; i < Util.numberOfIterationsToDiscard; i++) {
+if (i%segment == 0) {
+    System.out.print("-");
+}
             this.moveSupply(demandReferentPrice);
             this.moveDemand(supplyReferentPrice);
         }

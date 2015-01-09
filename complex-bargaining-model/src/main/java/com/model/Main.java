@@ -26,7 +26,8 @@ public class Main {
         Collection<MLArray> c = new ArrayList<>();
 
         c.add(new MLDouble("beta",Util.beta, 1));
-        c.add(test.exportIntradayPrices("intradayPrices"));
+System.out.print("\nExporting data to mat file...");
+//        c.add(test.exportIntradayPrices("intradayPrices"));
         c.add(test.exportAverageDailyPrices("averageDailyPrices"));
         c.add(test.exportDailyQuantities("dailyTradingQuantities"));
         c.add(test.exportDailyVolumes("dailyTradingVolumes"));
@@ -34,5 +35,6 @@ public class Main {
 //        c.add(test.exportDemandNetworkSize("demandSize"));
 
         new MatFileWriter("output.mat", c);
+System.out.print("\nDone.\n");
     }
 }
