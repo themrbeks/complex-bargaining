@@ -26,6 +26,11 @@ public class Market {
     int numberOfDays;
 
     public double[] intraDayPrices;
+    public double[] averageDayPrices;
+    public double[] dailyQuantities;
+    public double[] dailyVolumes;
+    public double[] supplyNetworkSize;
+    public double[] demandNetworkSize;
 
     double supplyReferentPrice;
     double demandReferentPrice;
@@ -55,6 +60,12 @@ public class Market {
         this.demandConcessionStep = demandConcessionStep;
 
         this.intraDayPrices = new double[numberOfDays*numberOfIterationsPerDay*2];
+        this.supplyNetworkSize = new double[numberOfDays*numberOfIterationsPerDay*2];
+        this.demandNetworkSize = new double[numberOfDays*numberOfIterationsPerDay*2];
+        this.averageDayPrices = new double[numberOfDays];
+        this.dailyQuantities = new double[numberOfDays];
+        this.dailyVolumes = new double[numberOfDays];
+
 
         //referent prices are just the initial prices of the first nodes in the network before the star of the next bargaining phase (after each trade occurs)
         this.supplyReferentPrice = this.supplyNetwork.getFirstNode().price;
@@ -63,17 +74,52 @@ public class Market {
 
         Util.iterationCounter = 0;
         Util.tradingDayCounter = 0;
+
+        this.discardFirstIterations();
+
         for (int i = 0; i < numberOfDays; i++) {
             for (int j = 0; j < this.numberOfIterationsPerDay; j++) {
+
+                this.supplyNetworkSize[Util.iterationCounter] = this.supplyNetwork.size();
                 this.intraDayPrices[Util.iterationCounter++] = this.moveSupply(demandReferentPrice);
+                if (!Double.isNaN(this.intraDayPrices[Util.iterationCounter-1])){
+                    this.dailyQuantities[Util.tradingDayCounter] += 1;
+                    this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
+                }
+                this.demandNetworkSize[Util.iterationCounter] = this.demandNetwork.size();
                 this.intraDayPrices[Util.iterationCounter++] = this.moveDemand(supplyReferentPrice);
+                if (!Double.isNaN(this.intraDayPrices[Util.iterationCounter-1])){
+                    this.dailyQuantities[Util.tradingDayCounter] += 1;
+                    this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
+                }
             }
+            this.averageDayPrices[Util.tradingDayCounter] = (double)this.dailyVolumes[Util.tradingDayCounter]/(double)this.dailyQuantities[Util.tradingDayCounter];
             Util.tradingDayCounter++;
         }
     }
 
     public MLDouble exportIntradayPrices(String variableName) {
         return new MLDouble(variableName,this.intraDayPrices,1);
+    }
+
+    public MLDouble exportDailyVolumes(String variableName) {
+        return new MLDouble(variableName,this.dailyVolumes,1);
+    }
+
+    public MLDouble exportDailyQuantities(String variableName) {
+        return new MLDouble(variableName,this.dailyQuantities,1);
+    }
+
+    public MLDouble exportAverageDailyPrices(String variableName) {
+        return new MLDouble(variableName,this.averageDayPrices,1);
+    }
+
+    public MLDouble exportSupplyNetworkSize(String variableName) {
+        return new MLDouble(variableName,this.supplyNetworkSize,1);
+    }
+
+    public MLDouble exportDemandNetworkSize(String variableName) {
+        return new MLDouble(variableName,this.demandNetworkSize,1);
     }
 
     private double moveSupply(double demandReferentPrice) {
@@ -103,12 +149,14 @@ System.out.println(Util.tradingDayCounter + ": " + tradePrice);
     }
 
     private void trade (SupplyAgent tradingSupplyAgent, DemandAgent tradingDemandAgent) {
+System.out.println(this.supplyNetwork.size());
+System.out.println(this.demandNetwork.size());
         this.demandNetwork.removeNodeFromNetwork(tradingDemandAgent);
         this.supplyNetwork.removeNodeFromNetwork(tradingSupplyAgent);
-        this.demandNetwork.addNewNodeToNetwork();
-        this.supplyNetwork.addNewNodeToNetwork();
         this.supplyReferentPrice = this.supplyNetwork.getFirstNode().price;
         this.demandReferentPrice = this.demandNetwork.getFirstNode().price;
+        this.supplyNetwork.addNewNodeToNetwork();
+        this.demandNetwork.addNewNodeToNetwork();
         this.setAllInitialAgentPrices();
     }
 
@@ -126,6 +174,11 @@ System.out.println(Util.tradingDayCounter + ": " + tradePrice);
     }
 
 
-
+    private void discardFirstIterations () {
+        for (int i = 0; i < Util.numberOfIterationsToDiscard; i++) {
+            this.moveSupply(demandReferentPrice);
+            this.moveDemand(supplyReferentPrice);
+        }
+    }
 
 }

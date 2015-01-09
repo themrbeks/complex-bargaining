@@ -1,11 +1,18 @@
 package com.model.bargaining;
 
+import com.jmatio.io.MatFileReader;
+import com.jmatio.types.MLArray;
+import com.jmatio.types.MLDouble;
+
 import java.io.*;
+import java.util.Random;
 
 /**
  * Created by Stjepan on 26/12/14.
  */
 public class Util {
+
+    public static Random random;
 
     public static int numberOfSupplyNodes;
     public static int numberOfDemandNodes;
@@ -22,6 +29,7 @@ public class Util {
     public static int numberOfIterationsPerDay;
     public static String betaFileName;
     public static double[] beta;
+    public static int numberOfIterationsToDiscard;
 
 
     public static int tradingDayCounter;
@@ -29,6 +37,8 @@ public class Util {
     public static double e = 1e-5; //calculation error margin
 
     public static void initialize(String fileName) throws Exception {
+
+        random = new Random();
 
         FileReader fStream = new FileReader(fileName);
         BufferedReader in = new BufferedReader(fStream);
@@ -51,10 +61,10 @@ public class Util {
                         demandNetworkProbabilityP = Double.parseDouble(values[1].trim());
                         break;
                     case "supplyNetworkStepDelta":
-                        supplyNetworkStepDelta = Double.parseDouble(values[1].trim());
+                        supplyNetworkStepDelta = 1 + Double.parseDouble(values[1].trim());
                         break;
                     case "demandNetworkStepDelta":
-                        demandNetworkStepDelta = Double.parseDouble(values[1].trim());
+                        demandNetworkStepDelta = 1 + Double.parseDouble(values[1].trim());
                         break;
                     case "supplyNetworkInitialNodePrice":
                         supplyNetworkInitialNodePrice = Double.parseDouble(values[1].trim());
@@ -63,10 +73,10 @@ public class Util {
                         demandNetworkInitialNodePrice = Double.parseDouble(values[1].trim());
                         break;
                     case "supplyAgentConcessionStep":
-                        supplyAgentConcessionStep = Double.parseDouble(values[1].trim());
+                        supplyAgentConcessionStep = 1 + Double.parseDouble(values[1].trim());
                         break;
                     case "demandAgentConcessionStep":
-                        demandAgentConcessionStep = Double.parseDouble(values[1].trim());
+                        demandAgentConcessionStep = 1 + Double.parseDouble(values[1].trim());
                         break;
                     case "betaC":
                         betaC = Double.parseDouble(values[1].trim());
@@ -80,6 +90,9 @@ public class Util {
                     case "betaFileName":
                         betaFileName = values[1].trim();
                         break;
+                    case "numberOfIterationsToDiscard":
+                        numberOfIterationsToDiscard = Integer.parseInt(values[1].trim());
+                        break;
                 }
             }
             line = in.readLine();
@@ -87,9 +100,10 @@ public class Util {
         in.close();
         fStream.close();
 
-        beta = new double[numberOfTradingDays];
+        beta = new double[numberOfTradingDays+1];
+        beta[0] = betaC;
         BufferedReader br = new BufferedReader(new FileReader(betaFileName));
-        for (int i = 0; i < numberOfTradingDays; i++) {
+        for (int i = 1; i < numberOfTradingDays; i++) {
             line = br.readLine();
             if (line == null) {
                 throw new Exception("Size of beta does not fit the number of trading days.");

@@ -58,6 +58,16 @@ public abstract class TradingAgent extends Node {
         int sizeOfOppositeCluster = firstOppositeAgent.connections.size() + 1;
         int sizeOfOwnCluster = this.connections.size() + 1;
 
+//      double sumOfOwnProximities = 0;
+//		for (int i = 0; i < referentNode.connections.size(); i++) {
+//			sumOfOwnProximities += (double) 1 / (double)this.calculateDistance(referentNode.connections.get(i).activationPrice);
+//		}
+//		double sumOfNeighborProximities = sumOfOwnProximities;
+//		for (int i = 1; i < this.connections.size(); i++) {
+//			sumOfNeighborProximities += (double) 1 / (double)referentNode.calculateDistance(this.connections.get(i).activationPrice);
+//		}
+//		double innerPart = sumOfOwnProximities / sumOfNeighborProximities;
+
         double innerPart = (double) sizeOfOppositeCluster / (double) (sizeOfOppositeCluster + sizeOfOwnCluster);
 
         if (this instanceof SupplyAgent) {
