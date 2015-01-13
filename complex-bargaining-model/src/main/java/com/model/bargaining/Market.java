@@ -74,6 +74,7 @@ public class Market {
 
         Util.iterationCounter = 0;
         Util.tradingDayCounter = 0;
+        Util.lastPrice = Util.betaC;
 
 System.out.print("\nDiscarding first " + Util.numberOfIterationsToDiscard + " iterations: \n[");
         this.discardFirstIterations();
@@ -94,12 +95,14 @@ if (i%segment == 0) {
                 if (!Double.isNaN(this.intraDayPrices[Util.iterationCounter-1])){
                     this.dailyQuantities[Util.tradingDayCounter] += 1;
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
+                    Util.lastPrice = this.intraDayPrices[Util.iterationCounter-1];
                 }
                 this.demandNetworkSize[Util.iterationCounter] = this.demandNetwork.size();
                 this.intraDayPrices[Util.iterationCounter++] = this.moveDemand(supplyReferentPrice);
                 if (!Double.isNaN(this.intraDayPrices[Util.iterationCounter-1])){
                     this.dailyQuantities[Util.tradingDayCounter] += 1;
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
+                    Util.lastPrice = this.intraDayPrices[Util.iterationCounter-1];
                 }
             }
             double dayPrice = (double)this.dailyVolumes[Util.tradingDayCounter]/(double)this.dailyQuantities[Util.tradingDayCounter];

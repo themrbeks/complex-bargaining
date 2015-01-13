@@ -32,6 +32,7 @@ public class Util {
     public static int numberOfIterationsToDiscard;
 
 
+    public static double lastPrice;
     public static int tradingDayCounter;
     public static int iterationCounter;
     public static double e = 1e-5; //calculation error margin
@@ -115,7 +116,7 @@ public class Util {
     }
 
     public static double getBeta() {
-        return beta[tradingDayCounter];
+        return beta[tradingDayCounter]/lastPrice;
     }
 
     public static double getBetaC() {
