@@ -71,9 +71,9 @@ public abstract class TradingAgent extends Node {
         double innerPart = (double) sizeOfOppositeCluster / (double) (sizeOfOppositeCluster + sizeOfOwnCluster);
 
         if (this instanceof SupplyAgent) {
-            return Math.pow(innerPart, Util.getBeta() / Util.getBetaC());
+            return Math.pow(innerPart, Util.getBeta() / Util.betaCs);
         } else {
-            return Math.pow(innerPart, Util.getBetaC() / Util.getBeta());
+            return Math.pow(innerPart, Util.betaCd / Util.getBeta());
         }
     }
 

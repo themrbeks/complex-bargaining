@@ -1,7 +1,5 @@
 package com.model.bargaining;
 
-import com.jmatio.io.MatFileReader;
-import com.jmatio.types.MLArray;
 import com.jmatio.types.MLDouble;
 
 import java.io.*;
@@ -24,15 +22,19 @@ public class Util {
     public static double demandNetworkInitialNodePrice;
     public static double supplyAgentConcessionStep;
     public static double demandAgentConcessionStep;
-    public static double betaC;
     public static int numberOfTradingDays;
     public static int numberOfIterationsPerDay;
-    public static String betaFileName;
-    public static double[] beta;
+    public static String realPriceFileName;
+    public static double[] realPrice;
     public static int numberOfIterationsToDiscard;
+    public static double betaExponent;
+    public static double betaCs;
+    public static double betaCd;
+    public static double pConstant;
 
 
     public static double lastPrice;
+    public static double lastPriceRatio;
     public static int tradingDayCounter;
     public static int iterationCounter;
     public static double e = 1e-5; //calculation error margin
@@ -79,8 +81,14 @@ public class Util {
                     case "demandAgentConcessionStep":
                         demandAgentConcessionStep = 1 + Double.parseDouble(values[1].trim());
                         break;
-                    case "betaC":
-                        betaC = Double.parseDouble(values[1].trim());
+                    case "betaCs":
+                        betaCs = Double.parseDouble(values[1].trim());
+                        break;
+                    case "betaCd":
+                        betaCd = Double.parseDouble(values[1].trim());
+                        break;
+                    case "betaExponent":
+                        betaExponent = Double.parseDouble(values[1].trim());
                         break;
                     case "numberOfTradingDays":
                         numberOfTradingDays = Integer.parseInt(values[1].trim());
@@ -88,11 +96,14 @@ public class Util {
                     case "numberOfIterationsPerDay":
                         numberOfIterationsPerDay = Integer.parseInt(values[1].trim());
                         break;
-                    case "betaFileName":
-                        betaFileName = values[1].trim();
+                    case "realPriceFileName":
+                        realPriceFileName = values[1].trim();
                         break;
                     case "numberOfIterationsToDiscard":
                         numberOfIterationsToDiscard = Integer.parseInt(values[1].trim());
+                        break;
+                    case "pConstant":
+                        pConstant = Double.parseDouble(values[1].trim());
                         break;
                 }
             }
@@ -101,26 +112,48 @@ public class Util {
         in.close();
         fStream.close();
 
-        beta = new double[numberOfTradingDays+1];
-        beta[0] = betaC;
-        BufferedReader br = new BufferedReader(new FileReader(betaFileName));
-        for (int i = 1; i < numberOfTradingDays; i++) {
+        realPrice = new double[numberOfTradingDays+1];
+        BufferedReader br = new BufferedReader(new FileReader(realPriceFileName));
+        for (int i = 1; i <= numberOfTradingDays; i++) {
             line = br.readLine();
             if (line == null) {
-                throw new Exception("Size of beta does not fit the number of trading days.");
+                throw new Exception("Size of realPrice does not fit the number of trading days.");
             }
-            beta[i] = Double.parseDouble(line.trim());
+            realPrice[i] = Double.parseDouble(line.trim());
         }
         br.close();
-
+        realPrice[0] = realPrice[1];
     }
 
     public static double getBeta() {
-        return beta[tradingDayCounter]/lastPrice;
+        return 0.9;//*lastPrice/(realPrice[tradingDayCounter]);
+//        return Math.pow((1/lastPriceRatio)*lastPrice/(realPrice[tradingDayCounter]),betaExponent);
     }
 
-    public static double getBetaC() {
-        return betaC;
+    public static double getSupplyNetworkProbabilityP() {
+        double pExponent = Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,0.3);
+        return Math.pow(Util.pConstant,pExponent);
+    }
+
+    public static double getDemandNetworkProbabilityP() {
+        double pExponent = Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),0.3);
+        return Math.pow(Util.pConstant, pExponent);
+    }
+
+    public static MLDouble exportRealPrice(String fileName) {
+        double[] realRealPrice = new double[realPrice.length-1];
+        for (int i = 1; i < realPrice.length; i++) {
+            realRealPrice[i-1] = realPrice[i];
+        }
+        return new MLDouble(fileName,realRealPrice,1);
+    }
+
+    public static MLDouble exportBeta (String fileName, double[] averageDayPrices) {
+        double[] beta = new double[realPrice.length-1];
+        for (int i = 1; i < realPrice.length; i++) {
+            beta[i-1] = averageDayPrices[i-1]/realPrice[i];
+        }
+        return new MLDouble(fileName,beta,1);
     }
 
 }

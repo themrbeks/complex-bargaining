@@ -74,7 +74,8 @@ public class Market {
 
         Util.iterationCounter = 0;
         Util.tradingDayCounter = 0;
-        Util.lastPrice = Util.betaC;
+        Util.lastPrice = Util.realPrice[0];
+        Util.lastPriceRatio = 1;
 
 System.out.print("\nDiscarding first " + Util.numberOfIterationsToDiscard + " iterations: \n[");
         this.discardFirstIterations();
@@ -95,14 +96,32 @@ if (i%segment == 0) {
                 if (!Double.isNaN(this.intraDayPrices[Util.iterationCounter-1])){
                     this.dailyQuantities[Util.tradingDayCounter] += 1;
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
+
+                    Util.lastPriceRatio = this.intraDayPrices[Util.iterationCounter-1]/Util.lastPrice;
                     Util.lastPrice = this.intraDayPrices[Util.iterationCounter-1];
+
+                    demandNetwork.probabilityP = Util.getDemandNetworkProbabilityP();
+                    supplyNetwork.probabilityP = Util.getSupplyNetworkProbabilityP();
+
+//                    demandNetwork.probabilityP = Math.pow (Util.pConstant,Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),0.2));
+//                    supplyNetwork.probabilityP = Math.pow (Util.pConstant,Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,0.2));
                 }
                 this.demandNetworkSize[Util.iterationCounter] = this.demandNetwork.size();
                 this.intraDayPrices[Util.iterationCounter++] = this.moveDemand(supplyReferentPrice);
                 if (!Double.isNaN(this.intraDayPrices[Util.iterationCounter-1])){
                     this.dailyQuantities[Util.tradingDayCounter] += 1;
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
+
+                    Util.lastPriceRatio = this.intraDayPrices[Util.iterationCounter-1]/Util.lastPrice;
                     Util.lastPrice = this.intraDayPrices[Util.iterationCounter-1];
+
+                    demandNetwork.probabilityP = Util.getDemandNetworkProbabilityP();
+                    supplyNetwork.probabilityP = Util.getSupplyNetworkProbabilityP();
+
+//                    demandNetwork.probabilityP = Math.pow (Util.pConstant,Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),0.2));
+//                    supplyNetwork.probabilityP = Math.pow (Util.pConstant,Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,0.2));
+
+
                 }
             }
             double dayPrice = (double)this.dailyVolumes[Util.tradingDayCounter]/(double)this.dailyQuantities[Util.tradingDayCounter];
