@@ -126,17 +126,17 @@ public class Util {
     }
 
     public static double getBeta() {
-        return 0.9;//*lastPrice/(realPrice[tradingDayCounter]);
+        return 0.5*lastPrice/(realPrice[tradingDayCounter]);
 //        return Math.pow((1/lastPriceRatio)*lastPrice/(realPrice[tradingDayCounter]),betaExponent);
     }
 
     public static double getSupplyNetworkProbabilityP() {
-        double pExponent = Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,0.3);
+        double pExponent = Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,1);
         return Math.pow(Util.pConstant,pExponent);
     }
 
     public static double getDemandNetworkProbabilityP() {
-        double pExponent = Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),0.3);
+        double pExponent = Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),1);
         return Math.pow(Util.pConstant, pExponent);
     }
 
