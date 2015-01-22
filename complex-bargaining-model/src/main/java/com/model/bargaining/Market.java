@@ -75,7 +75,7 @@ public class Market {
         Util.iterationCounter = 0;
         Util.tradingDayCounter = 0;
         Util.lastPrice = Util.realPrice[0];
-        Util.lastPriceRatio = 1;
+        Util.lastlastPrice = 1;
 
 System.out.print("\nDiscarding first " + Util.numberOfIterationsToDiscard + " iterations: \n[");
         this.discardFirstIterations();
@@ -97,7 +97,7 @@ if (i%segment == 0) {
                     this.dailyQuantities[Util.tradingDayCounter] += 1;
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
 
-                    Util.lastPriceRatio = this.intraDayPrices[Util.iterationCounter-1]/Util.lastPrice;
+                    Util.lastlastPrice = Util.lastPrice;
                     Util.lastPrice = this.intraDayPrices[Util.iterationCounter-1];
 
                     demandNetwork.probabilityP = Util.getDemandNetworkProbabilityP();
@@ -112,7 +112,7 @@ if (i%segment == 0) {
                     this.dailyQuantities[Util.tradingDayCounter] += 1;
                     this.dailyVolumes[Util.tradingDayCounter] += this.intraDayPrices[Util.iterationCounter-1];
 
-                    Util.lastPriceRatio = this.intraDayPrices[Util.iterationCounter-1]/Util.lastPrice;
+                    Util.lastlastPrice = Util.lastPrice;
                     Util.lastPrice = this.intraDayPrices[Util.iterationCounter-1];
 
                     demandNetwork.probabilityP = Util.getDemandNetworkProbabilityP();

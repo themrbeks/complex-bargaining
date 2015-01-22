@@ -34,7 +34,7 @@ public class Util {
 
 
     public static double lastPrice;
-    public static double lastPriceRatio;
+    public static double lastlastPrice;
     public static int tradingDayCounter;
     public static int iterationCounter;
     public static double e = 1e-5; //calculation error margin
@@ -126,8 +126,8 @@ public class Util {
     }
 
     public static double getBeta() {
-        return 0.5*lastPrice/(realPrice[tradingDayCounter]);
-//        return Math.pow((1/lastPriceRatio)*lastPrice/(realPrice[tradingDayCounter]),betaExponent);
+        return 0.3*lastPrice/(realPrice[tradingDayCounter]); //TODO stavi one stvari
+//        return Math.pow((1/lastlastPrice)*lastPrice/(realPrice[tradingDayCounter]),betaExponent);
     }
 
     public static double getSupplyNetworkProbabilityP() {

@@ -6,8 +6,8 @@ supplyNetworkStepDelta: 0.02
 demandNetworkStepDelta: -0.02
 supplyNetworkInitialNodePrice: 694
 demandNetworkInitialNodePrice: 693
-supplyAgentConcessionStep: -0.01
-demandAgentConcessionStep: 0.01
+supplyAgentConcessionStep: -0.005
+demandAgentConcessionStep: 0.005
 betaCs: 1
 betaCd: 1
 betaExponent: 1
@@ -15,5 +15,5 @@ numberOfTradingDays: 6450
 numberOfIterationsPerDay: 2000
 realPriceFileName: preal.csv
 numberOfIterationsToDiscard: 0
-pConstant: 0.3
+pConstant: 0.4
 
