@@ -126,7 +126,15 @@ public class Util {
     }
 
     public static double getBeta() {
-        return 0.3*lastPrice/(realPrice[tradingDayCounter]); //TODO stavi one stvari
+        double lastRatio;
+        if (tradingDayCounter == 0) {
+            lastRatio = 1;
+        }
+        else {
+            lastRatio = lastlastPrice/realPrice[tradingDayCounter-1];
+        }
+        double currentRatio = Math.pow(lastPrice/realPrice[tradingDayCounter],1);
+        return 0.8 * lastRatio;///currentRatio; //TODO stavi one stvari
 //        return Math.pow((1/lastlastPrice)*lastPrice/(realPrice[tradingDayCounter]),betaExponent);
     }
 
