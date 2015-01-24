@@ -1,13 +1,13 @@
-numberOfSupplyNodes: 700
-numberOfDemandNodes: 700
+numberOfSupplyNodes: 600
+numberOfDemandNodes: 600
 supplyNetworkProbabilityP: 0.2
 demandNetworkProbabilityP: 0.2
-supplyNetworkStepDelta: 0.01
-demandNetworkStepDelta: -0.01
+supplyNetworkStepDelta: 0.005
+demandNetworkStepDelta: -0.005
 supplyNetworkInitialNodePrice: 694
 demandNetworkInitialNodePrice: 693
-supplyAgentConcessionStep: -0.005
-demandAgentConcessionStep: 0.005
+supplyAgentConcessionStep: -0.01
+demandAgentConcessionStep: 0.01
 betaCs: 1
 betaCd: 1
 betaExponent: 1
@@ -15,5 +15,5 @@ numberOfTradingDays: 6450
 numberOfIterationsPerDay: 2000
 realPriceFileName: preal.csv
 numberOfIterationsToDiscard: 0
-pConstant: 0.3
+pConstant: 0.2
 

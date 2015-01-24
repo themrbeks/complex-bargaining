@@ -134,18 +134,24 @@ public class Util {
             lastRatio = lastlastPrice/realPrice[tradingDayCounter-1];
         }
         double currentRatio = Math.pow(lastPrice/realPrice[tradingDayCounter],1);
-        return 0.8 * lastRatio;///currentRatio; //TODO stavi one stvari
+        return 0.6 * lastRatio/currentRatio; //TODO stavi one stvari
 //        return Math.pow((1/lastlastPrice)*lastPrice/(realPrice[tradingDayCounter]),betaExponent);
     }
 
     public static double getSupplyNetworkProbabilityP() {
-        double pExponent = Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,1);
-        return Math.pow(Util.pConstant,pExponent);
+        double ratio = Math.pow(Util.lastPrice/Util.realPrice[Util.tradingDayCounter],1);
+        return 1 - Math.exp(-Util.pConstant*ratio);
+//        stara implementacija
+//        double pExponent = Math.pow((Util.realPrice[Util.tradingDayCounter])/Util.lastPrice,1);
+//        return Math.pow(Util.pConstant,pExponent);
     }
 
     public static double getDemandNetworkProbabilityP() {
-        double pExponent = Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),1);
-        return Math.pow(Util.pConstant, pExponent);
+        double ratio = Math.pow(Util.realPrice[Util.tradingDayCounter]/Util.lastPrice,1);
+        return 1 - Math.exp(-Util.pConstant*ratio);
+//        stara implementacija
+//        double pExponent = Math.pow((Util.lastPrice/Util.realPrice[Util.tradingDayCounter]),1);
+//        return Math.pow(Util.pConstant, pExponent);
     }
 
     public static MLDouble exportRealPrice(String fileName) {
