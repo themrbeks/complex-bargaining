@@ -87,6 +87,23 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         }
     }
 
+    public void removeNodeFromNetworkAndReconnectNeighbors(Node node){
+        for (int i = 0; i < node.connections.size(); i++) {
+            for (int j = i+1; j < node.connections.size(); j++) {
+                if(!this.isNeighbor(node.connections.get(i),node.connections.get(j))) {
+                    this.connectNodes(node.connections.get(i), node.connections.get(j));
+                }
+            }
+        }
+
+        for (Node neighbor : node.connections) {
+            neighbor.connections.remove(node);
+        }
+        node.connections.clear();
+        this.listOfNodeIDs.remove((Integer)node.ID);
+        this.removeVertex(node);
+    }
+
     public void removeNodeFromNetwork(Node node) {
         for (Node neighbor : node.connections) {
             neighbor.connections.remove(node);

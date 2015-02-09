@@ -36,16 +36,14 @@ public abstract class TradingAgent extends Node {
             return true;
         }
         else {
-            double deltaScalingFactor;
-            if (this instanceof DemandAgent) {
-                deltaScalingFactor = 1-Math.pow(this.calculateLambda(firstOppositeAgent),1);//Util.betac/Util.getBeta());
-            }
-            else {
-                deltaScalingFactor = 1-Math.pow(this.calculateLambda(firstOppositeAgent),1);//Util.getBeta()/Util.betac);
-            }
-            this.price *= 1+((this.concessionStep-1) * deltaScalingFactor);
+            this.price = this.calculateNextPrice(firstOppositeAgent);
             return false;
         }
+    }
+
+    private double calculateNextPrice (TradingAgent firstOppositeAgent){
+        double deltaScalingFactor = 1-this.calculateLambda(firstOppositeAgent);
+        return this.price * (1 + this.concessionStep*deltaScalingFactor);
     }
 
     /**
@@ -57,29 +55,20 @@ public abstract class TradingAgent extends Node {
 
         int sizeOfOppositeCluster = firstOppositeAgent.connections.size() + 1;
         int sizeOfOwnCluster = this.connections.size() + 1;
-
-//      double sumOfOwnProximities = 0;
-//		for (int i = 0; i < referentNode.connections.size(); i++) {
-//			sumOfOwnProximities += (double) 1 / (double)this.calculateDistance(referentNode.connections.get(i).activationPrice);
-//		}
-//		double sumOfNeighborProximities = sumOfOwnProximities;
-//		for (int i = 1; i < this.connections.size(); i++) {
-//			sumOfNeighborProximities += (double) 1 / (double)referentNode.calculateDistance(this.connections.get(i).activationPrice);
-//		}
-//		double innerPart = sumOfOwnProximities / sumOfNeighborProximities;
-
         double innerPart = (double) sizeOfOppositeCluster / (double) (sizeOfOppositeCluster + sizeOfOwnCluster);
 
         if (this instanceof SupplyAgent) {
-            return Math.pow(innerPart, Util.getBeta() / Util.betaCs);
-        } else {
-            return Math.pow(innerPart, Util.betaCd / Util.getBeta());
+            return Math.pow(innerPart,Util.getBeta());
         }
+        else {
+            return Math.pow(innerPart,(double)1/Util.getBeta());
+        }
+
     }
 
     private boolean acceptsOffer (TradingAgent firstOppositeAgent, double referentPrice) {
         double expectedUtilityOfOfferedPrice = this.calculateExpectedUtility(firstOppositeAgent.price, firstOppositeAgent, referentPrice, 0);
-        double expectedUtilityOfOwnPrice = this.calculateExpectedUtility(this.price, firstOppositeAgent, referentPrice, 1);
+        double expectedUtilityOfOwnPrice = this.calculateExpectedUtility(this.calculateNextPrice(firstOppositeAgent), firstOppositeAgent, referentPrice, 1);
         if ((expectedUtilityOfOfferedPrice - expectedUtilityOfOwnPrice > Util.e)) {
             return true;
         }
