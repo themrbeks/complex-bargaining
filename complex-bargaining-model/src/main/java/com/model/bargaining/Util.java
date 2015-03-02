@@ -105,7 +105,10 @@ public class Util {
     }
 
     public static double getBeta() {
-        return exponent[tradingDayCounter];//*lastlastPrice/lastPrice;
+        if (tradingDayCounter<30)
+            return 1;
+        else
+            return 1./(25*(0.7*exponent[tradingDayCounter]+0.3*(Util.lastPrice/Util.realPrice[Util.tradingDayCounter])/(Util.lastlastPrice/Util.realPrice[Util.tradingDayCounter-30]))-24);//*lastlastPrice/lastPrice;
     }
 
     public static double getSupplyNetworkProbabilityP() {
@@ -137,5 +140,6 @@ public class Util {
         br.close();
         return parsedDouble;
     }
+
 
 }
