@@ -10,9 +10,8 @@ supplyNetworkInitialNodePrice: 568
 demandNetworkInitialNodePrice: 567
 supplyAgentConcessionStep: -0.005
 demandAgentConcessionStep: 0.005
-numberOfTradingDays: 12420
+numberOfTradingDays: 18780
 numberOfIterationsPerDay: 2000
-numberOfIterationsToDiscard: 0
-pConstant: 0.2
+numberOfIterationsToDiscard: 200000
 realPriceFileName: intrinsicPrice.csv
 exponentFileName: exponent.csv

@@ -95,9 +95,6 @@ public class Util {
                     case "numberOfIterationsToDiscard":
                         numberOfIterationsToDiscard = Integer.parseInt(values[1].trim());
                         break;
-                    case "pConstant":
-                        pConstant = Double.parseDouble(values[1].trim());
-                        break;
                     case "realPriceFileName":
                         realPrice = parseCSVFile(values[1].trim(),numberOfTradingDays);
                         break;
@@ -118,12 +115,12 @@ public class Util {
 
     public static double getSupplyNetworkProbabilityP() {
         double ratio = Math.pow(Util.lastPrice/Util.realPrice[Util.tradingDayCounter],1);
-        return 1 - Math.exp(-Util.pConstant*ratio);
+        return 1 - Math.exp(-Util.supplyNetworkProbabilityP*ratio);
     }
 
     public static double getDemandNetworkProbabilityP() {
         double ratio = Math.pow(Util.realPrice[Util.tradingDayCounter]/Util.lastPrice,1);
-        return 1 - Math.exp(-Util.pConstant*ratio);
+        return 1 - Math.exp(-Util.demandNetworkProbabilityP*ratio);
     }
 
     public static MLDouble exportRealPrice(String fileName) {
