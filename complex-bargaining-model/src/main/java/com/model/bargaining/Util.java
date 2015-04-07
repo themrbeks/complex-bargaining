@@ -16,6 +16,8 @@ public class Util {
     public static int numberOfDemandNodes;
     public static double supplyNetworkProbabilityP;
     public static double demandNetworkProbabilityP;
+    public static double initialSupplyNetworkProbabilityP;
+    public static double initialDemandNetworkProbabilityP;
     public static double supplyNetworkStepDelta;
     public static double demandNetworkStepDelta;
     public static double supplyNetworkInitialNodePrice;
@@ -55,9 +57,15 @@ public class Util {
                         numberOfDemandNodes = Integer.parseInt(values[1].trim());
                         break;
                     case "initialSupplyNetworkProbabilityP":
-                        supplyNetworkProbabilityP = Double.parseDouble(values[1].trim());
+                        initialSupplyNetworkProbabilityP = Double.parseDouble(values[1].trim());
                         break;
                     case "initialDemandNetworkProbabilityP":
+                        initialDemandNetworkProbabilityP = Double.parseDouble(values[1].trim());
+                        break;
+                    case "supplyNetworkProbabilityP":
+                        supplyNetworkProbabilityP = Double.parseDouble(values[1].trim());
+                        break;
+                    case "demandNetworkProbabilityP":
                         demandNetworkProbabilityP = Double.parseDouble(values[1].trim());
                         break;
                     case "supplyNetworkStepDelta":

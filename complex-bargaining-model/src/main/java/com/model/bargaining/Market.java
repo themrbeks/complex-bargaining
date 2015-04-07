@@ -35,7 +35,7 @@ public class Market {
     double supplyReferentPrice;
     double demandReferentPrice;
 
-    public Market(int numberOfSupplyNodes, int numberOfDemandNodes, double supplyP, double demandP, double supplyNetworkStepDelta, double demandNetworkStepDelta, double initialSupplyNodePrice, double initialDemandNodePrice) {
+    public Market(int numberOfSupplyNodes, int numberOfDemandNodes, double supplyP, double demandP, double supplyPSim, double demandPSim, double supplyNetworkStepDelta, double demandNetworkStepDelta, double initialSupplyNodePrice, double initialDemandNodePrice) {
         this.numberOfSupplyNodes = numberOfSupplyNodes;
         this.numberOfDemandNodes = numberOfDemandNodes;
         this.supplyP = supplyP;
@@ -50,6 +50,9 @@ public class Market {
 
         demandNetwork.initializeNetwork(numberOfDemandNodes,initialDemandNodePrice);
         supplyNetwork.initializeNetwork(numberOfSupplyNodes,initialSupplyNodePrice);
+
+        demandNetwork.probabilityP = demandPSim;
+        supplyNetwork.probabilityP = supplyPSim;
 
     }
 

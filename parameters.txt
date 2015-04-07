@@ -2,6 +2,8 @@ numberOfSupplyNodes: 500
 numberOfDemandNodes: 500
 initialSupplyNetworkProbabilityP: 0.2
 initialDemandNetworkProbabilityP: 0.2
+supplyNetworkProbabilityP: 0.2
+demandNetworkProbabilityP: 0.2
 supplyNetworkStepDelta: 0.01
 demandNetworkStepDelta: -0.01
 supplyNetworkInitialNodePrice: 568
