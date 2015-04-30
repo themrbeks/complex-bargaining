@@ -36,8 +36,12 @@ System.out.print("\nExporting data to mat file...");
         c.add(test.exportAverageSupplyLambda("averageSupplyLambda"));
         c.add(test.exportFirstSupplyClusterSize("firstSupplyClusterSize"));
         c.add(test.exportFirstDemandClusterSize("firstDemandClusterSize"));
+        c.add(test.exportExponent("exponent"));
+        c.add(test.exportDemandPrices("demandPrices"));
+        c.add(test.exportSupplyPrices("supplyPrices"));
 
         new MatFileWriter("output.mat", c);
 System.out.print("\nDone.\n");
+        System.out.println(Util.kolikoPuta);
     }
 }

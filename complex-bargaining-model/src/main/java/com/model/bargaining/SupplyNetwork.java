@@ -54,4 +54,14 @@ public class SupplyNetwork extends ClusteredChainNetwork {
         }
         return lastNode;
     }
+
+    public boolean reconnectLastAgentIntoNetwork () {
+        double temp = Util.random.nextDouble();
+        if (temp < Util.probabilityOfReconnect) {
+            this.removeNodeFromNetworkAndReconnectNeighbors(this.getLastNode());
+            this.addNodeToExistingStructure(new SupplyAgent());
+            return true;
+        }
+        return false;
+    }
 }

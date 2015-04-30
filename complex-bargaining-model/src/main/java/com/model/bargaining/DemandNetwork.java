@@ -55,5 +55,14 @@ public class DemandNetwork extends ClusteredChainNetwork {
         return lastNode;
     }
 
+    public boolean reconnectLastAgentIntoNetwork () {
+        double temp = Util.random.nextDouble();
+        if (temp < Util.probabilityOfReconnect) {
+            this.removeNodeFromNetworkAndReconnectNeighbors(this.getLastNode());
+            this.addNodeToExistingStructure(new DemandAgent());
+            return true;
+        }
+        return false;
+    }
 
 }

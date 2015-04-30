@@ -267,9 +267,29 @@ if (i%segment == 0) {
         return new MLDouble(variableName,this.firstDemandClusterSize,1);
     }
 
+    public MLDouble exportExponent(String variableName) {
+        return new MLDouble(variableName,Util.exponent,1);
+    }
+
+    public MLDouble exportSupplyPrices(String variableName) {
+        double[] prices = new double[supplyNetwork.size()];
+        for (int i = 0; i < prices.length; i++) {
+            prices[i] = supplyNetwork.getNode(supplyNetwork.listOfNodeIDs.get(i)).price;
+        }
+        return new MLDouble(variableName,prices,1);
+    }
+
+    public MLDouble exportDemandPrices(String variableName) {
+        double[] prices = new double[demandNetwork.size()];
+        for (int i = 0; i < prices.length; i++) {
+            prices[i] = demandNetwork.getNode(demandNetwork.listOfNodeIDs.get(i)).price;
+        }
+        return new MLDouble(variableName,prices,1);
+    }
 
 
     private double moveSupply(double demandReferentPrice) {
+
         SupplyAgent activeSupplyAgent = (SupplyAgent) this.supplyNetwork.getRandomNode();
         DemandAgent firstDemandAgent = (DemandAgent) this.demandNetwork.getFirstNode();
 
@@ -283,6 +303,8 @@ if (i%segment == 0) {
     }
 
     private double moveDemand(double supplyReferentPrice) {
+
+
         DemandAgent activeDemandAgent = (DemandAgent) this.demandNetwork.getRandomNode();
         SupplyAgent firstSupplyAgent = (SupplyAgent) this.supplyNetwork.getFirstNode();
 
@@ -302,6 +324,10 @@ if (i%segment == 0) {
         this.demandReferentPrice = this.demandNetwork.getFirstNode().price;
         this.supplyNetwork.addNewNodeToNetwork();
         this.demandNetwork.addNewNodeToNetwork();
+        if (supplyNetwork.reconnectLastAgentIntoNetwork())
+            Util.kolikoPuta++;
+        if (demandNetwork.reconnectLastAgentIntoNetwork())
+            Util.kolikoPuta++;
         this.setAllInitialAgentPrices();
     }
 

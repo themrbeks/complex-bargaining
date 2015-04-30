@@ -194,7 +194,7 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         this.connectNodeToNeighborhood(node, nodesToConnectTo);
     }
 
-    private void addNodeToExistingStructure(Node node) {
+    public void addNodeToExistingStructure(Node node) {
         Node originalNodeToConnectTo = this.getRandomNode(); //get first uniformly random node to connect to
 
         double priceOfNewNode = this.calculatePriceOfNeighborhood(originalNodeToConnectTo); //new node price is the neighborhood avg

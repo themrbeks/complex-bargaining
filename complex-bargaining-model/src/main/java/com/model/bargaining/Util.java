@@ -30,6 +30,10 @@ public class Util {
     public static double[] exponent;
     public static int numberOfIterationsToDiscard;
     public static double pConstant;
+    public static double a;
+    public static double probabilityOfReconnect;
+
+    public static double kolikoPuta;
 
 
     public static double lastPrice;
@@ -39,6 +43,8 @@ public class Util {
     public static double e = 1e-5; //calculation error margin
 
     public static void initialize(String fileName) throws Exception {
+
+        kolikoPuta = 0;
 
         random = new Random();
 
@@ -98,8 +104,12 @@ public class Util {
                     case "realPriceFileName":
                         realPrice = parseCSVFile(values[1].trim(),numberOfTradingDays);
                         break;
-                    case "exponentFileName":
-                        exponent = parseCSVFile(values[1].trim(),numberOfTradingDays);
+                    case "a":
+                        a = Double.parseDouble(values[1].trim());
+                        exponent = calculateExponent(realPrice);
+                        break;
+                    case "probabilityOfReconnect":
+                        probabilityOfReconnect = Double.parseDouble(values[1].trim());
                         break;
                 }
             }
@@ -141,6 +151,22 @@ public class Util {
         }
         br.close();
         return parsedDouble;
+    }
+
+    private static double[] calculateExponent (double[] intrinsic) {
+        double[] exponent = new double[intrinsic.length];
+        double thisMonth, lastMonth;
+        thisMonth = intrinsic[0];
+        lastMonth = intrinsic[0];
+        for (int i = 0; i < intrinsic.length; i++) {
+            if (intrinsic[i]!=thisMonth) {
+                lastMonth = thisMonth;
+                thisMonth = intrinsic[i];
+            }
+            exponent[i] = 1/(Util.a * (thisMonth-lastMonth)/lastMonth + 1);
+            exponent[i] = 1/(thisMonth/lastMonth*25-24);
+        }
+        return exponent;
     }
 
 
