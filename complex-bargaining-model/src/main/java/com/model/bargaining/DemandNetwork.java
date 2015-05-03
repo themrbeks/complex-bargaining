@@ -23,6 +23,10 @@ public class DemandNetwork extends ClusteredChainNetwork {
     protected void addNewNodeToNetwork(){
         this.addNodeToNetwork(new DemandAgent());
     }
+    
+    protected void addNewNodeToNetworkAvoidFirstCluster(){
+        this.addNodeToNetworkAvoidFirstCluster(new DemandAgent());
+    }
 
     @Override
     protected DemandAgent getNode (int nodeID) {

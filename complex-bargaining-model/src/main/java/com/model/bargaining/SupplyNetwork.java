@@ -20,8 +20,13 @@ public class SupplyNetwork extends ClusteredChainNetwork {
         this.addNode(initialNode);
     }
 
+    @Override
     protected void addNewNodeToNetwork(){
         this.addNodeToNetwork(new SupplyAgent());
+    }
+
+    protected void addNewNodeToNetworkAvoidFirstCluster(){
+        this.addNodeToNetworkAvoidFirstCluster(new SupplyAgent());
     }
 
     @Override

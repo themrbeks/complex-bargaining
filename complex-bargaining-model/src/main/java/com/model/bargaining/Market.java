@@ -322,8 +322,8 @@ if (i%segment == 0) {
         this.supplyNetwork.removeNodeFromNetworkAndReconnectNeighbors(tradingSupplyAgent);
         this.supplyReferentPrice = this.supplyNetwork.getFirstNode().price;
         this.demandReferentPrice = this.demandNetwork.getFirstNode().price;
-        this.supplyNetwork.addNewNodeToNetwork();
-        this.demandNetwork.addNewNodeToNetwork();
+        this.supplyNetwork.addNewNodeToNetworkAvoidFirstCluster();
+        this.demandNetwork.addNewNodeToNetworkAvoidFirstCluster();
         if (supplyNetwork.reconnectLastAgentIntoNetwork())
             Util.kolikoPuta++;
         if (demandNetwork.reconnectLastAgentIntoNetwork())

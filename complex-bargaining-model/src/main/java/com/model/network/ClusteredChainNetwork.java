@@ -6,6 +6,7 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -72,6 +73,17 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         return this.getNode(this.listOfNodeIDs.get(randomNodeIndex));
     }
 
+    private Node getRandomNodeWhichIsNotInTheFirstCluster() {
+        ArrayList<Integer> nodeIDsNotInFirst = new ArrayList<Integer>();
+        Node firstNode = this.getFirstNode();
+        for (int i = 0; i <listOfNodeIDs.size(); i++) {
+            if (!this.getNode(listOfNodeIDs.get(i)).connections.contains(firstNode))
+                nodeIDsNotInFirst.add(listOfNodeIDs.get(i));
+        }
+        int randomNodeIndex = random.nextInt(nodeIDsNotInFirst.size());
+        return this.getNode(nodeIDsNotInFirst.get(randomNodeIndex));
+    }
+
 
     /**
      * Adds the specified node to the network, following the clustered chain network algorithm, with the probability parameter p.
@@ -81,6 +93,16 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         ArrayList<Node> nodesToConnectTo;
         if (random.nextDouble()<this.probabilityP) { //with probability probabilityP, connect to the existing structure
             addNodeToExistingStructure(node);
+        }
+        else {  //with probability 1 - probabilityP, connect to the tail of the network
+            addNodeToTail(node);
+        }
+    }
+
+    public void addNodeToNetworkAvoidFirstCluster(Node node) {
+        ArrayList<Node> nodesToConnectTo;
+        if (random.nextDouble()<this.probabilityP) { //with probability probabilityP, connect to the existing structure
+            addNodeToExistingStructureAvoidFirstCluster(node);
         }
         else {  //with probability 1 - probabilityP, connect to the tail of the network
             addNodeToTail(node);
@@ -196,6 +218,19 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
 
     public void addNodeToExistingStructure(Node node) {
         Node originalNodeToConnectTo = this.getRandomNode(); //get first uniformly random node to connect to
+
+        double priceOfNewNode = this.calculatePriceOfNeighborhood(originalNodeToConnectTo); //new node price is the neighborhood avg
+        node.price = priceOfNewNode; //set both prices to new price as average of neighborhood
+
+        ArrayList<Node> nodesToConnectTo = new ArrayList(this.getNeighbors(originalNodeToConnectTo)); //connect to all the neighbors of the first node
+        nodesToConnectTo.add(originalNodeToConnectTo);
+
+        this.addNode(node);
+        this.connectNodeToNeighborhood(node, nodesToConnectTo);
+    }
+
+    public void addNodeToExistingStructureAvoidFirstCluster(Node node) {
+        Node originalNodeToConnectTo = this.getRandomNodeWhichIsNotInTheFirstCluster(); //get first uniformly random node to connect to
 
         double priceOfNewNode = this.calculatePriceOfNeighborhood(originalNodeToConnectTo); //new node price is the neighborhood avg
         node.price = priceOfNewNode; //set both prices to new price as average of neighborhood
