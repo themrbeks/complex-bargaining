@@ -44,6 +44,8 @@ System.out.print("\nExporting data to mat file...");
         c.add(test.exportExponent("exponent"));
         c.add(test.exportDemandPrices("demandPrices"));
         c.add(test.exportSupplyPrices("supplyPrices"));
+        c.add(test.exportDailySupplyClusteringCoefficients("supplyCC"));
+        c.add(test.exportDailyDemandClusteringCoefficients("demandCC"));
 
 
         c.add(exportParametersToStruct());

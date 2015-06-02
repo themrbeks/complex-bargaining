@@ -32,6 +32,7 @@ public class Util {
     public static double pConstant;
     public static double a;
     public static double probabilityOfReconnect;
+    public static double epsilon;
 
     public static double kolikoPuta;
 
@@ -80,12 +81,12 @@ public class Util {
                     case "demandNetworkStepDelta":
                         demandNetworkStepDelta = 1 + Double.parseDouble(values[1].trim());
                         break;
-                    case "supplyNetworkInitialNodePrice":
-                        supplyNetworkInitialNodePrice = Double.parseDouble(values[1].trim());
-                        break;
-                    case "demandNetworkInitialNodePrice":
-                        demandNetworkInitialNodePrice = Double.parseDouble(values[1].trim());
-                        break;
+//                    case "supplyNetworkInitialNodePrice":
+//                        supplyNetworkInitialNodePrice = Double.parseDouble(values[1].trim());
+//                        break;
+//                    case "demandNetworkInitialNodePrice":
+//                        demandNetworkInitialNodePrice = Double.parseDouble(values[1].trim());
+//                        break;
                     case "supplyAgentConcessionStep":
                         supplyAgentConcessionStep = Double.parseDouble(values[1].trim());
                         break;
@@ -103,6 +104,8 @@ public class Util {
                         break;
                     case "realPriceFileName":
                         realPrice = parseCSVFile(values[1].trim(),numberOfTradingDays);
+                        supplyNetworkInitialNodePrice = realPrice[0]*1.01;
+                        demandNetworkInitialNodePrice = realPrice[0]*0.99;
                         break;
                     case "a":
                         a = Double.parseDouble(values[1].trim());
@@ -110,6 +113,9 @@ public class Util {
                         break;
                     case "probabilityOfReconnect":
                         probabilityOfReconnect = Double.parseDouble(values[1].trim());
+                        break;
+                    case "epsilon":
+                        epsilon = Double.parseDouble(values[1].trim());
                         break;
                 }
             }
@@ -120,7 +126,7 @@ public class Util {
     }
 
     public static double getBeta() {
-        return exponent[tradingDayCounter];//*lastlastPrice/lastPrice;
+        return (double) exponent[tradingDayCounter];//*lastlastPrice/lastPrice;
     }
 
     public static double getSupplyNetworkProbabilityP() {
@@ -163,8 +169,8 @@ public class Util {
                 lastMonth = thisMonth;
                 thisMonth = intrinsic[i];
             }
-            exponent[i] = 1/(Util.a * (thisMonth-lastMonth)/lastMonth + 1);
-            exponent[i] = 1/(thisMonth/lastMonth*25-24);
+            exponent[i] = (Util.a * (thisMonth-lastMonth)/lastMonth);
+//            exponent[i] = 1/(thisMonth/lastMonth*25-24);
         }
         return exponent;
     }

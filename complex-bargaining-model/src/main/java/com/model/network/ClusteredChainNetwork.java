@@ -2,6 +2,7 @@ package com.model.network;
 
 import com.jmatio.types.MLDouble;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
+import edu.uci.ics.jung.algorithms.metrics.Metrics;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -266,6 +268,19 @@ public class ClusteredChainNetwork extends UndirectedSparseGraph {
         this.addEdge(new Edge(), node1, node2);
         node1.addToConnections(node2);
         node2.addToConnections(node1);
+    }
+
+    public double calculateCC() {
+        Map<Node,Double> clusteringCoefficients = Metrics.clusteringCoefficients(this);
+        double sum = 0;
+        double cnt = 0;
+//        System.out.println(clusteringCoefficients.size());
+        for (Double cc : clusteringCoefficients.values()){
+//            System.out.println(cc);
+            sum += cc;
+            cnt ++;
+        }
+        return (double) sum / (double) cnt;
     }
 
 }

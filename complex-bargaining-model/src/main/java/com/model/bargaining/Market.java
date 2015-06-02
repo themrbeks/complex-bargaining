@@ -27,6 +27,10 @@ public class Market {
     public double[] dailyQuantities;
     public double[] dailyVolumes;
 
+    public double[] dailySupplyClusteringCoefficient;
+    public double[] dailyDemandClusteringCoefficient;
+
+
     double[] firstSupplyClusterSize;
     double[] firstDemandClusterSize;
     double[] averageSupplyLambda;
@@ -66,6 +70,9 @@ public class Market {
         this.firstDemandClusterSize = new double[Util.numberOfTradingDays];
         this.averageSupplyLambda = new double[Util.numberOfTradingDays];
         this.averageDemandLambda = new double[Util.numberOfTradingDays];
+
+        dailySupplyClusteringCoefficient = new double[Util.numberOfTradingDays];
+        dailyDemandClusteringCoefficient = new double[Util.numberOfTradingDays];
 
         double lastTradedPriceOrNaN;
 
@@ -122,6 +129,9 @@ if (Util.tradingDayCounter%segment == 0) {
 
             this.firstSupplyClusterSize[Util.tradingDayCounter] = supplyNetwork.getFirstNode().connections.size();
             this.firstDemandClusterSize[Util.tradingDayCounter] = demandNetwork.getFirstNode().connections.size();
+            this.dailyDemandClusteringCoefficient[Util.tradingDayCounter] = demandNetwork.calculateCC();
+            this.dailySupplyClusteringCoefficient[Util.tradingDayCounter] = supplyNetwork.calculateCC();
+
             double sumOfLambda = 0;
             DemandAgent firstDemandAgent = demandNetwork.getFirstNode();
             ArrayList<SupplyAgent> supplyNodeList = new ArrayList(supplyNetwork.getVertices());
@@ -182,6 +192,10 @@ System.out.print("\nSimulating " + Util.numberOfTradingDays + " trading days: \n
 int segment = Util.numberOfTradingDays/10-1;
 
         for (int i = 0; i < numberOfDays; i++) {
+
+            this.dailyDemandClusteringCoefficient[Util.tradingDayCounter] = demandNetwork.calculateCC();
+            this.dailySupplyClusteringCoefficient[Util.tradingDayCounter] = supplyNetwork.calculateCC();
+
 if (i%segment == 0) {
     System.out.print("-");
 }
@@ -230,6 +244,8 @@ if (i%segment == 0) {
             else {
                 this.averageDayPrices[Util.tradingDayCounter] = dayPrice;
             }
+
+
             Util.tradingDayCounter++;
         }
         System.out.print("] Done.");
@@ -285,6 +301,14 @@ if (i%segment == 0) {
             prices[i] = demandNetwork.getNode(demandNetwork.listOfNodeIDs.get(i)).price;
         }
         return new MLDouble(variableName,prices,1);
+    }
+
+    public MLDouble exportDailySupplyClusteringCoefficients(String variableName) {
+        return new MLDouble(variableName,this.dailySupplyClusteringCoefficient,1);
+    }
+
+    public MLDouble exportDailyDemandClusteringCoefficients(String variableName) {
+        return new MLDouble(variableName,this.dailyDemandClusteringCoefficient,1);
     }
 
 
@@ -357,5 +381,6 @@ if (i%segment == 0) {
             this.moveDemand(supplyReferentPrice);
         }
     }
+
 
 }
